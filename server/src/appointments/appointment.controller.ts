@@ -149,6 +149,20 @@ export const updateAppointment = async(
             })
         };
 
+        const result = await pg.query(
+            `
+            UPDATE appointments
+            SET patientname = $1,
+            appointmentat = $2,
+            status = $3
+            WHERE id = $4
+            RETURNING *
+            `,[patientname, appointmentat, status, id]
+        );
+        return res.status(200).json({
+            message: "Appointment update successfully",
+            appointment: result.rows[0]
+        });
 
     } catch (error) {
         console.error("Error update appointment: ", error);
