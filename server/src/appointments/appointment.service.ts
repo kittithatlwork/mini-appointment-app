@@ -14,3 +14,26 @@ export const checkAppointmentOverlap = async (
     );
     return result.rows.length > 0;
 };
+
+export const checkPatientName =  (
+    patientname: string,
+): boolean => {
+    return patientname.trim().length === 0;
+}
+
+export const checkAllowStatus = (
+    status: string,
+): boolean => {
+    const ALLOWED_STATUSES = [
+        "pending",
+        "confirmed",
+        "cancelled"
+    ]
+    return ALLOWED_STATUSES.includes(status);
+}
+
+export const isAppointmentInFuture = (
+    appointmentat: string
+): boolean => {
+    return new Date(appointmentat) > new Date;
+}
