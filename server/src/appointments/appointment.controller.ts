@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import pg from "../db";
-import { checkAppointmentOverlap } from "./appointment.service";
+import {
+    checkAllowStatus,
+    checkAppointmentOverlap,
+    checkPatientName,
+    isAppointmentInFuture
+} from "./appointment.service";
  
 
 export const createAppointment = async (
@@ -9,13 +14,25 @@ export const createAppointment = async (
 ) => {
     try{
         const { patientname, appointmentat, status } = req.body;
-        if (new Date(appointmentat) < new Date()){
+        if (!isAppointmentInFuture(appointmentat)){
             return res.status(400).json({
                 error: "Appointment time must be in the future"
             })
         }
     
         if (await checkAppointmentOverlap(appointmentat)) return res.status(409).json({ error: "Conflict" });
+
+        if (checkPatientName(patientname)){
+            return res.status(400).json({
+                error: "Patient name is required"
+            });
+        }
+
+        if (!checkAllowStatus(status)){
+            return res.status(400).json({
+                error: "Invalid status"
+            })
+        }
 
         const result = await pg.query(
             `
