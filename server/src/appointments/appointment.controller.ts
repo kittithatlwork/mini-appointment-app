@@ -15,6 +15,9 @@ export const createAppointment = async (
 ) => {
     try{
         const { patientname, appointmentat, status } = req.body;
+        console.log("appointmentat:", appointmentat);
+        console.log("parsed:", new Date(appointmentat));
+        console.log("now:", new Date());
         if (!isAppointmentInFuture(appointmentat)){
             return res.status(400).json({
                 error: "Appointment time must be in the future"
@@ -43,10 +46,7 @@ export const createAppointment = async (
             RETURNING *
             `,[patientname, appointmentat, status]
         );
-        return res.status(201).json({
-            message: "Appointment created",
-            appoiment: result.rows[0]
-        });
+        return res.status(201).json(result.rows[0]);
     }
     catch (error) {
         console.error("Error creating appointment", error);
@@ -146,58 +146,102 @@ export const deleteAppointment = async (
 
 };
 
-export const updateAppointment = async(
-    req:Request,
-    res:Response
+// export const updateAppointment = async(
+//     req:Request,
+//     res:Response
+// ) => {
+//     try {
+//         const { id } = req.params;
+//         const { patientname, appointmentat, status } = req.body;
+
+//         const existing = await pg.query(
+//             `
+//             SELECT id
+//             FROM appointments
+//             WHERE id = $1
+//             `,[id]
+//         );
+
+//         if (existing.rows.length === 0){
+//             return res.status(404).json({
+//                 error: "Appointment not found"
+//             })
+//         };
+
+//         if (!isAppointmentInFuture(appointmentat)){
+//             return res.status(400).json({
+//                 error: "Appointment time must be in the future"
+//             })
+//         }
+
+//         if (await checkAppointmentOverlapUpdate(appointmentat, id)){
+//             return res.status(409).json({ error: "Conflict" })
+//         }
+
+
+//         const result = await pg.query(
+//             `
+//             UPDATE appointments
+//             SET patientname = $1,
+//             appointmentat = $2,
+//             status = $3
+//             WHERE id = $4
+//             RETURNING *
+//             `,[patientname, appointmentat, status, id]
+//         );
+//         return res.status(200).json({
+//             message: "Appointment update successfully",
+//             appointment: result.rows[0]
+//         });
+
+//     } catch (error) {
+//         console.error("Error update appointment: ", error);
+//         res.status(500).json({
+//             error: "Internal Server Error"
+//         });
+//     }
+// }
+
+export const updateAppointment = async (
+    req: Request,
+    res: Response
 ) => {
     try {
         const { id } = req.params;
-        const { patientname, appointmentat, status } = req.body;
+        const { status } = req.body;
 
         const existing = await pg.query(
             `
             SELECT id
             FROM appointments
             WHERE id = $1
-            `,[id]
+            `,
+            [id]
         );
 
-        if (existing.rows.length === 0){
+        if (existing.rows.length === 0) {
             return res.status(404).json({
                 error: "Appointment not found"
-            })
-        };
-
-        if (!isAppointmentInFuture(appointmentat)){
-            return res.status(400).json({
-                error: "Appointment time must be in the future"
-            })
+            });
         }
-
-        if (await checkAppointmentOverlapUpdate(appointmentat, id)){
-            return res.status(409).json({ error: "Conflict" })
-        }
-
 
         const result = await pg.query(
             `
             UPDATE appointments
-            SET patientname = $1,
-            appointmentat = $2,
-            status = $3
-            WHERE id = $4
+            SET status = $1
+            WHERE id = $2
             RETURNING *
-            `,[patientname, appointmentat, status, id]
+            `,
+            [status, id]
         );
-        return res.status(200).json({
-            message: "Appointment update successfully",
-            appointment: result.rows[0]
-        });
+
+        return res.status(200).json(result.rows[0]);
 
     } catch (error) {
         console.error("Error update appointment: ", error);
-        res.status(500).json({
+
+        return res.status(500).json({
             error: "Internal Server Error"
         });
     }
-}
+}; 
