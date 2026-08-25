@@ -4,7 +4,8 @@ import {
     checkAllowStatus,
     checkAppointmentOverlap,
     checkPatientName,
-    isAppointmentInFuture
+    isAppointmentInFuture,
+    checkAppointmentOverlapUpdate
 } from "./appointment.service";
  
 
@@ -160,11 +161,23 @@ export const updateAppointment = async(
             WHERE id = $1
             `,[id]
         );
+
         if (existing.rows.length === 0){
             return res.status(404).json({
                 error: "Appointment not found"
             })
         };
+
+        if (!isAppointmentInFuture(appointmentat)){
+            return res.status(400).json({
+                error: "Appointment time must be in the future"
+            })
+        }
+
+        if (await checkAppointmentOverlapUpdate(appointmentat, id)){
+            return res.status(409).json({ error: "Conflict" })
+        }
+
 
         const result = await pg.query(
             `
