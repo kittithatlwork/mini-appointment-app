@@ -1,5 +1,7 @@
 # Mini Appointment App
 
+A simple appointment management application that allows users to create appointments, view appointments, filter by status, and update appointment status.
+
 ## 1. Setup and Run
 
 ### Prerequisites
@@ -28,6 +30,18 @@ Run the database schema from the project root:
 ```bash
 psql -U postgres -d ooca-appointment -f schema.sql
 ```
+
+> **`psql` not found / not recognized?**
+> This means `psql` isn't in your system `PATH`. Fix it one of these ways:
+>
+> - **Windows**: Add the PostgreSQL `bin` folder to `PATH` (e.g. `C:\Program Files\PostgreSQL\<version>\bin`), then open a new terminal.
+> - **macOS (Postgres.app)**: Add `/Applications/Postgres.app/Contents/Versions/latest/bin` to `PATH`, or install the CLI tools via `brew install libpq && brew link --force libpq`.
+> - **macOS/Linux (Homebrew)**: `brew install postgresql` and follow the printed `PATH` instructions.
+> - **No PATH changes needed**: run `psql` using its full path instead, e.g.
+>   ```bash
+>   "C:\Program Files\PostgreSQL\<version>\bin\psql.exe" -U postgres -d ooca-appointment -f schema.sql
+>   ```
+> - Alternatively, open the database in **pgAdmin** and run the contents of `schema.sql` via its Query Tool.
 
 The schema creates the `appointments` table with:
 
