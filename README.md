@@ -32,16 +32,59 @@ psql -U postgres -d ooca-appointment -f schema.sql
 ```
 
 > **`psql` not found / not recognized?**
-> This means `psql` isn't in your system `PATH`. Fix it one of these ways:
+> This means `psql` isn't in your system `PATH`. Here's how to add it:
 >
-> - **Windows**: Add the PostgreSQL `bin` folder to `PATH` (e.g. `C:\Program Files\PostgreSQL\<version>\bin`), then open a new terminal.
-> - **macOS (Postgres.app)**: Add `/Applications/Postgres.app/Contents/Versions/latest/bin` to `PATH`, or install the CLI tools via `brew install libpq && brew link --force libpq`.
-> - **macOS/Linux (Homebrew)**: `brew install postgresql` and follow the printed `PATH` instructions.
-> - **No PATH changes needed**: run `psql` using its full path instead, e.g.
->   ```bash
->   "C:\Program Files\PostgreSQL\<version>\bin\psql.exe" -U postgres -d ooca-appointment -f schema.sql
->   ```
-> - Alternatively, open the database in **pgAdmin** and run the contents of `schema.sql` via its Query Tool.
+> **Windows**
+> 1. Find your PostgreSQL install folder, usually:
+>    `C:\Program Files\PostgreSQL\<version>\bin`
+> 2. Press `Win`, search for **"Edit the system environment variables"**, and open it.
+> 3. Click **Environment Variables** → under **System variables** (or **User variables**), select **Path** → **Edit**.
+> 4. Click **New** and paste the `bin` path from step 1.
+> 5. Click **OK** on all windows, then **close and reopen** your terminal.
+> 6. Verify with:
+>    ```bash
+>    psql --version
+>    ```
+>
+> **macOS (Postgres.app)**
+> 1. Open (or create) `~/.zshrc` (or `~/.bash_profile` if using bash):
+>    ```bash
+>    nano ~/.zshrc
+>    ```
+> 2. Add this line at the bottom:
+>    ```bash
+>    export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+>    ```
+> 3. Save (`Ctrl+O`, `Enter`, `Ctrl+X`), then reload:
+>    ```bash
+>    source ~/.zshrc
+>    ```
+> 4. Verify with `psql --version`.
+>
+> **macOS/Linux (Homebrew)**
+> 1. Install PostgreSQL if you haven't:
+>    ```bash
+>    brew install postgresql
+>    ```
+> 2. Homebrew usually links `psql` into `/opt/homebrew/bin` or `/usr/local/bin`, which are already in `PATH`. If `psql --version` still fails, add the printed path manually:
+>    ```bash
+>    echo 'export PATH="/opt/homebrew/opt/postgresql/bin:$PATH"' >> ~/.zshrc
+>    source ~/.zshrc
+>    ```
+>
+> **Linux (apt)**
+> ```bash
+> sudo apt update
+> sudo apt install postgresql-client
+> ```
+> This installs `psql` into `/usr/bin`, which is already in `PATH`.
+>
+> **No PATH changes needed**: run `psql` using its full path instead, e.g.
+> ```bash
+> "C:\Program Files\PostgreSQL\<version>\bin\psql.exe" -U postgres -d ooca-appointment -f schema.sql
+> ```
+>
+> Alternatively, open the database in **pgAdmin** and run the contents of `schema.sql` via its Query Tool.
 
 The schema creates the `appointments` table with:
 
