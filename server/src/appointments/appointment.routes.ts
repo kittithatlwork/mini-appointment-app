@@ -1,19 +1,19 @@
 import { Router } from "express";
 import {
     createAppointment,
-    getAppointmentByID,
+    // getAppointmentByID,
     deleteAppointment,
     getAppointments,
-    updateAppointment
+    updateStatusAppointment
 } from "./appointment.controller";
 
 const router = Router();
 
 router.post("/appointments", createAppointment);
-router.delete("/appointments/:id", deleteAppointment);
 router.get("/appointments", getAppointments);
-router.get("/appointments/:id", getAppointmentByID);
-router.patch("/appointments/:id", updateAppointment)
+// router.get("/appointments/:id", getAppointmentByID);
+router.patch("/appointments/:id", updateStatusAppointment);
+router.delete("/appointments/:id", deleteAppointment);
 
 
 export default router;

@@ -27,10 +27,19 @@ function AppointmentCard({
                 <h2 className="text-lg font-semibold text-gray-900">
                     {appointment.patientname}
                 </h2>
-
-                <span className="rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-700">
-                    {appointment.status}
-                </span>
+                <div className="flex items-center justify-between">
+                    <span
+                    className={`rounded-full px-3 py-1 text-sm font-medium
+                    ${
+                        appointment.status === "confirmed"
+                        ? "bg-green-100 text-green-700"
+                        : appointment.status === "cancelled"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}>
+                        {appointment.status}
+                    </span>
+                </div>
             </div>
 
             <div className="mt-4 space-y-2 text-sm text-gray-600">

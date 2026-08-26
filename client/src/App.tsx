@@ -10,6 +10,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [filterStatus, setFilterStatus] = useState<AppointmentStatus | "">("");
   const [error, setError] = useState("");
 
   const handleCreate = () => {
@@ -24,6 +25,7 @@ function App() {
       appointment,
     ]);
     setLoading(false);
+    setIsModalOpen(false)
   }
 
   useEffect(() => {
@@ -32,7 +34,8 @@ function App() {
         setLoading(true);
         setError("");
 
-        const data = await getAppointments();
+        // const data = await getAppointments();
+        const data = await getAppointments(filterStatus || undefined);
         setAppointments(data);
       } catch (error) {
         setError(
@@ -46,7 +49,7 @@ function App() {
       }
     };
     fetchAppointments();
-  }, []);
+  }, [filterStatus]);
 
 
   const handleStatusChange = async(
@@ -116,6 +119,22 @@ function App() {
               </div>
             ) : (
               <>
+              <div className="mb-6 flex items-center justify-between">
+                  <select
+                      value={filterStatus}
+                      onChange={(e) =>
+                          setFilterStatus(
+                              e.target.value as AppointmentStatus | ""
+                          )
+                      }
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  >
+                      <option value="">All Status</option>
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="cancelled">Cancelled</option>
+                  </select>
+              </div>
               <AppointmentModal isOpen={ isModalOpen }
               onClose={() => setIsModalOpen(false)}
               onSuccess={ handleAppointmentCreated } />
