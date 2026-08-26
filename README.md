@@ -19,13 +19,29 @@ cd mini-appointment-app
 
 ## 2. Database Setup
 
-Create a PostgreSQL database:
+Connect to PostgreSQL using `psql`:
+
+```bash
+psql -U postgres
+```
+
+You'll be prompted for your PostgreSQL password. Once connected, your prompt will change to `postgres=#` — this means you're inside the `psql` shell.
+
+Create a PostgreSQL database (run this **inside** the `psql` shell, including the trailing semicolon):
 
 ```sql
 CREATE DATABASE "ooca-appointment";
 ```
 
-Run the database schema from the project root:
+Then exit `psql`:
+
+```sql
+\q
+```
+
+> **Note:** `CREATE DATABASE` is a SQL command and must be run inside the `psql` shell, not directly in `cmd`/terminal — running it outside `psql` will give an error like `'CREATE' is not recognized as an internal or external command`.
+
+Run the database schema from the project root (this command runs in your regular terminal, **not** inside `psql`):
 
 ```bash
 psql -U postgres -d ooca-appointment -f schema.sql
