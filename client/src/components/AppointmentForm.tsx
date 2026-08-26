@@ -16,6 +16,7 @@ function AppointmentForm({
     const [appointmentAt, setappointmentAt] = useState("");
     const [status, setStatus] = useState<AppointmentStatus>("pending");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -40,6 +41,7 @@ function AppointmentForm({
                 status
             );
             console.log("Appointment created");
+            setSuccess("Appointment created successfully.")
             onSuccess(appointment);
         }
         catch (e) {
@@ -56,6 +58,13 @@ function AppointmentForm({
     }
     return (
         <form className="space-y-5" onSubmit={ handleSubmit }>
+            {
+                success && (
+                    <div className=" rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600">
+                        {success}
+                    </div>
+                )
+            }
             {
                 error && (
                     <div className=" rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">

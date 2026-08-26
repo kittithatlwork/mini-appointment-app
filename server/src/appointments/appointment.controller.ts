@@ -5,7 +5,7 @@ import {
     checkAppointmentOverlap,
     checkPatientName,
     isAppointmentInFuture,
-    checkAppointmentOverlapUpdate
+    // checkAppointmentOverlapUpdate
 } from "./appointment.service";
  
 
@@ -24,7 +24,7 @@ export const createAppointment = async (
             })
         }
     
-        if (await checkAppointmentOverlap(appointmentat)) return res.status(409).json({ error: "Conflict" });
+        if (await checkAppointmentOverlap(appointmentat)) return res.status(409).json({ error: "This appointment time is already booked. Please choose another time." });
 
         if (checkPatientName(patientname)){
             return res.status(400).json({
@@ -46,7 +46,10 @@ export const createAppointment = async (
             RETURNING *
             `,[patientname, appointmentat, status]
         );
-        return res.status(201).json(result.rows[0]);
+        return res.status(201).json({
+            ...result.rows[0],
+            message: "Appointment created successfully."
+        });
     }
     catch (error) {
         console.error("Error creating appointment", error);
@@ -57,46 +60,61 @@ export const createAppointment = async (
     }
 };
 
-export const getAppointmentByID = async (
-    req: Request,
-    res: Response
-) => {
-    try {
-        const { id } = req.params;
-        const result = await pg.query(
-            `
-            SELECT *
-            FROM appointments
-            WHERE id = $1
-            `,[id]
-        );
+// export const getAppointmentByID = async (
+//     req: Request,
+//     res: Response
+// ) => {
+//     try {
+//         const { id } = req.params;
+//         const result = await pg.query(
+//             `
+//             SELECT *
+//             FROM appointments
+//             WHERE id = $1
+//             `,[id]
+//         );
         
-        if (result.rows.length === 0){
-            return res.status(404).json({
-                error: "Appointment not found"
-            });
-        }
-        return res.status(200).json(result.rows[0]);
-    }
-    catch (error) {
-        console.error("Error getting appointment by ID: ", error);
-        return res.status(500).json({
-            error: "Internal server error"
-        })
-    }
-};
+//         if (result.rows.length === 0){
+//             return res.status(404).json({
+//                 error: "Appointment not found"
+//             });
+//         }
+//         return res.status(200).json(result.rows[0]);
+//     }
+//     catch (error) {
+//         console.error("Error getting appointment by ID: ", error);
+//         return res.status(500).json({
+//             error: "Internal server error"
+//         })
+//     }
+// };
 
 export const getAppointments = async (
     req: Request,
     res: Response
 ) => {
     try {
-        const result = await pg.query(
+        const { status } = req.query;
+        
+        if (status && !checkAllowStatus(status as string)) {
+            return res.status(400).json({
+                error: "Invalid status"
+            });
+        }
+        let query =
             `
             SELECT *
             FROM appointments
             `
-        )
+        
+        const values: string[] = [];
+        if (status) {
+            query += ` WHERE status = $1`;
+            values.push(status as string);
+        }
+
+        query += ` ORDER BY appointmentat ASC`;
+        const result = await pg.query(query, values);
         return res.status(200).json(result.rows)
     }
     catch (error) {
@@ -202,7 +220,7 @@ export const deleteAppointment = async (
 //     }
 // }
 
-export const updateAppointment = async (
+export const updateStatusAppointment = async (
     req: Request,
     res: Response
 ) => {
@@ -223,6 +241,12 @@ export const updateAppointment = async (
             return res.status(404).json({
                 error: "Appointment not found"
             });
+        }
+
+        if (!checkAllowStatus(status)){
+            return res.status(400).json({
+                error: "Invalid status"
+            })
         }
 
         const result = await pg.query(

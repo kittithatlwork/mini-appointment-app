@@ -1,6 +1,6 @@
 import type { Appointment, AppointmentStatus } from "../types/appointment";
 
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_SERVER_API_URL;
 
 export const createAppointment = async (
     patientName: string,
@@ -27,15 +27,29 @@ export const createAppointment = async (
     return data;
 };
 
-export const getAppointments = async ():Promise<Appointment[]> => {
-    const response = await fetch(`${API_URL}/appointments`);
-    const data = await response.json();
+// export const getAppointments = async ():Promise<Appointment[]> => {
+//     const response = await fetch(`${API_URL}/appointments`);
+//     const data = await response.json();
+
+//     if (!response.ok){
+//         throw new Error(data.error || "Failed to fetch appointments");
+//     }
+//     return data;
+// }
+
+export const getAppointments = async (status?: AppointmentStatus) => {
+    const url = status
+        ? `${API_URL}/appointments?status=${status}`
+        : `${API_URL}/appointments`;
+
+    const response = await fetch(url);
 
     if (!response.ok){
+        const data = await response.json();
         throw new Error(data.error || "Failed to fetch appointments");
     }
-    return data;
-}
+    return response.json();
+};
 
 export const updateAppointmentStatus = async (
     id: number,
