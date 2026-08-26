@@ -22,7 +22,7 @@ cd mini-appointment-app
 Connect to PostgreSQL using `psql`:
 
 ```bash
-psql -U postgres
+psql -U <DATABASE_USERNAME>
 ```
 
 You'll be prompted for your PostgreSQL password. Once connected, your prompt will change to `postgres=#` — this means you're inside the `psql` shell.
@@ -30,7 +30,7 @@ You'll be prompted for your PostgreSQL password. Once connected, your prompt wil
 Create a PostgreSQL database (run this **inside** the `psql` shell, including the trailing semicolon):
 
 ```sql
-CREATE DATABASE "ooca-appointment";
+CREATE DATABASE "<DATABASE_NAME>";
 ```
 
 Then exit `psql`:
@@ -44,7 +44,7 @@ Then exit `psql`:
 Run the database schema from the project root (this command runs in your regular terminal, **not** inside `psql`):
 
 ```bash
-psql -U postgres -d ooca-appointment -f schema.sql
+psql -U postgres -d <DATABASE_NAME> -f schema.sql
 ```
 
 > **`psql` not found / not recognized?**
